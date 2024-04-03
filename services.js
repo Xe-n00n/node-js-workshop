@@ -1,82 +1,60 @@
-const fs=require('fs')
+const fs = require("fs");
 
-
-function readAll(file){
-try{
-    const data=fs.readFileSync(file)
-    return JSON.parse(data)
-
-}catch(err){
-    console.log(err.message)
-}
+function readAll(file) {
+    const data = fs.readFileSync(file);
+    return JSON.parse(data);
 
 }
 
+function readOne(file, id) {
 
-function readOne(file,id){
-    try{
-        const data=readAll(file)
+    const data = readAll(file);
 
-        const task=data.find(task=>task.id===id)
+    const task = data.find((task) => task.id === id);
 
-        return task
-    }catch(err){
-        console.log(err.message)
-    }
+    return task;
+ 
+}
 
+function Create(file, object) {
+  console.log(object)
+    const data = readAll(file);
+    object.id = data.length + 1;
+    data.push(object);
+    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+    return object;
 
 }
 
-function Create(file,object){
-    try{
-        const data=readAll(file)
-        object.id=data.length+1
-        data.push(object)
-        fs.writeFileSync(file,JSON.stringify(data,null,2))
-        return object
-    
+function Delete(file, id) {
 
-    }catch(err){
-        console.log(err.message)
-    }
+    const data = readAll(file);
+    const deletedObject = data.filter((task) => task.id !== id);
 
+    fs.writeFileSync(file, JSON.stringify(deletedObject, null, 2));
+    return deletedObject;
 
 }
 
-function Delete(file,id){
-    try{
-        const data=readAll(file)
-        const deletedObject=data.filter(task=>task.id!==id)
+function update(file, id, updatedTask) {
 
-        fs.writeFileSync(file,JSON.stringify(deletedObject,null,2))
-        return deletedObject
-
-    }catch(err){
-        console.log(err.message)
-    }
-
-
-}
-
-function update(file,id, updatedTask) {
     const tasks = readAll(file);
-    const index = tasks.findIndex(task => task.id === id);
+    const index = tasks.findIndex((task) => task.id === id);
     if (index !== -1) {
-        tasks[index] = { ...tasks[index], ...updatedTask };
-        fs.writeFileSync(file,JSON.stringify(tasks,null,2))
+      tasks[index] = { ...tasks[index], ...updatedTask };
+      fs.writeFileSync(file, JSON.stringify(tasks, null, 2));
 
-        return tasks[index];
+      return tasks[index];
     } else {
-        return null;
+      return null;
     }
+
 }
 
-
-module.exports={
-
-    readAll,
-    readOne,
-    Create,
-    Delete,
-    update
-}
+module.exports = {
+  readAll,
+  readOne,
+  Create,
+  Delete,
+  update,
+};
